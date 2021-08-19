@@ -461,14 +461,16 @@ export default class List extends PureComponent {
         }
 
         // Add the rest
-        channelsByCategory.map((cat) => {
-            return data.push({
-                name: cat.display_name,
-                action: cat.type === 'direct_messages' ? this.goToDirectMessages : this.showCreateChannelOptions,
-                data: cat.channel_ids,
-                ...cat,
+        if (channelsByCategory) {
+            channelsByCategory.map((cat) => {
+                return data.push({
+                    name: cat.display_name,
+                    action: cat.type === 'direct_messages' ? this.goToDirectMessages : this.showCreateChannelOptions,
+                    data: cat.channel_ids,
+                    ...cat,
+                });
             });
-        });
+        }
 
         return data;
     }
