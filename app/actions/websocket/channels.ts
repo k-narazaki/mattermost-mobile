@@ -237,9 +237,9 @@ export function fetchChannelAndAddToSidebar(channelId: string, type?: string) {
             dispatch(batchActions(channelActions, type));
         }
 
-        const config = getConfig(getState());
+        const state = getState();
 
-        if (channel && !shouldShowLegacySidebar(config)) {
+        if (channel && !shouldShowLegacySidebar(state)) {
             dispatch(addChannelToInitialCategory(channel.data));
             return {data: true};
         }
