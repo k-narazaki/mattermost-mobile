@@ -29,7 +29,7 @@ import {
     getMyChannelMemberships,
     isManuallyUnread,
 } from '@mm-redux/selectors/entities/channels';
-import {getConfig, getLicense} from '@mm-redux/selectors/entities/general';
+import {getLicense} from '@mm-redux/selectors/entities/general';
 import {getPostIdsInChannel} from '@mm-redux/selectors/entities/posts';
 import {isCollapsedThreadsEnabled} from '@mm-redux/selectors/entities/preferences';
 import {getTeamByName as selectTeamByName, getCurrentTeam, getTeamMemberships} from '@mm-redux/selectors/entities/teams';
@@ -720,7 +720,6 @@ function loadGroupData(isReconnect = false) {
 export function loadChannelsForTeam(teamId, skipDispatch = false, isReconnect = false) {
     return async (dispatch, getState) => {
         const state = getState();
-        const config = getConfig(state);
         const currentUserId = getCurrentUserId(state);
         const lastConnectAt = state.websocket?.lastConnectAt || 0;
         const data = {
@@ -750,7 +749,7 @@ export function loadChannelsForTeam(teamId, skipDispatch = false, isReconnect = 
                 }
             }
 
-            if (!shouldShowLegacySidebar(config)) {
+            if (!shouldShowLegacySidebar(state)) {
                 await dispatch(fetchMyCategories(teamId));
             }
 

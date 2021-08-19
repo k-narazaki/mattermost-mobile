@@ -66,6 +66,7 @@ export default class List extends PureComponent {
 
         this.state = {
             sections: this.buildSections(props),
+            categorySections: this.buildCategorySections(props.channelsByCategory),
             showIndicator: false,
             width: 0,
         };
@@ -89,6 +90,9 @@ export default class List extends PureComponent {
     setSections(sections) {
         this.setState({sections});
     }
+    setCategorySections(categorySections) {
+        this.setState({categorySections});
+    }
 
     componentDidUpdate(prevProps, prevState) {
         const {
@@ -96,13 +100,16 @@ export default class List extends PureComponent {
             orderedChannelIds,
             unreadChannelIds,
             channelsByCategory,
+            showLegacySidebar,
         } = prevProps;
 
         if (this.props.canCreatePrivateChannels !== canCreatePrivateChannels ||
             this.props.unreadChannelIds !== unreadChannelIds ||
             this.props.orderedChannelIds !== orderedChannelIds ||
-            this.props.channelsByCategory !== channelsByCategory) {
+            this.props.channelsByCategory !== channelsByCategory ||
+            this.props.showLegacySidebar !== showLegacySidebar) {
             this.setSections(this.buildSections(this.props));
+            this.setCategorySections(this.buildCategorySections(this.props.channelsByCategory));
         }
 
         if (prevState.sections !== this.state.sections && this.listRef?._wrapperListRef?.getListRef()._viewabilityHelper) { //eslint-disable-line
@@ -173,13 +180,7 @@ export default class List extends PureComponent {
     buildSections = (props) => {
         const {
             orderedChannelIds,
-            channelsByCategory,
-            showLegacySidebar,
         } = props;
-
-        if (!showLegacySidebar) {
-            return this.buildCategorySections(channelsByCategory);
-        }
 
         const sections = orderedChannelIds.map((s) => {
             return {
@@ -231,6 +232,7 @@ export default class List extends PureComponent {
         BottomSheet.showBottomSheetWithOptions({
             anchor: this.combinedActionsRef?.current ? findNodeHandle(this.combinedActionsRef.current) : null,
             options,
+            title: 'Add Channels',
             cancelButtonIndex,
         }, (value) => {
             if (value !== cancelButtonIndex) {
@@ -258,6 +260,18 @@ export default class List extends PureComponent {
         const title = intl.formatMessage({id: 'mobile.create_channel.private', defaultMessage: 'New Private Channel'});
         const passProps = {
             channelType: General.PRIVATE_CHANNEL,
+            closeButton: this.closeButton,
+        };
+
+        EventEmitter.emit(NavigationTypes.CLOSE_MAIN_SIDEBAR);
+        showModal(screen, title, passProps);
+    });
+
+    goToCreateChannel = preventDoubleTap(() => {
+        const {intl} = this.context;
+        const screen = 'CreateChannel';
+        const title = intl.formatMessage({id: 'mobile.create_channel', defaultMessage: 'Create a new Channel'});
+        const passProps = {
             closeButton: this.closeButton,
         };
 
@@ -509,7 +523,7 @@ export default class List extends PureComponent {
 
     render() {
         const {testID, styles, theme, showLegacySidebar, collapsedThreadsEnabled} = this.props;
-        const {sections, showIndicator} = this.state;
+        const {sections, categorySections, showIndicator} = this.state;
 
         const paddingBottom = this.listContentPadding();
         const indicatorStyle = [styles.above];
@@ -527,7 +541,7 @@ export default class List extends PureComponent {
                 )}
                 <SectionList
                     ref={this.setListRef}
-                    sections={sections}
+                    sections={showLegacySidebar ? sections : categorySections}
                     contentContainerStyle={{paddingBottom}}
                     removeClippedSubviews={Platform.OS === 'android'}
                     renderItem={showLegacySidebar ? this.renderItem : this.renderCategoryItem}

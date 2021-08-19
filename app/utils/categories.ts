@@ -1,12 +1,15 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {gt, lte} from 'semver';
+import {gte, lt} from 'semver';
 
 import {Client4} from '@client/rest';
-import {Config} from '@mm-redux/types/config';
+import {getConfig} from '@mm-redux/selectors/entities/general';
+import {getNewSidebarPreference} from '@mm-redux/selectors/entities/preferences';
+import {GlobalState} from '@mm-redux/types/store';
 
-export const shouldShowLegacySidebar = (config: Partial<Config>) => {
+export const shouldShowLegacySidebar = (state: GlobalState) => {
+    const config = getConfig(state);
     const serverVersion = config.Version || Client4.getServerVersion();
 
     // No server version? Default to legacy.
@@ -15,15 +18,17 @@ export const shouldShowLegacySidebar = (config: Partial<Config>) => {
     }
 
     // Older servers default to Legacy unless experimental flag is set
-    if (lte(serverVersion, '5.31.0')) {
-        if (config.ExperimentalChannelSidebarOrganization === 'true') {
+    if (lt(serverVersion, '5.32.0')) {
+        const experimentalSidebarPref = getNewSidebarPreference(state);
+
+        if (experimentalSidebarPref) {
             return false;
         }
         return true;
     }
 
     // Newer servers only show legacy if legacy flag is set
-    if (gt(serverVersion, '5.31.0') && config.EnableLegacySidebar === 'true') {
+    if (gte(serverVersion, '5.32.0') && config.EnableLegacySidebar === 'true') {
         return true;
     }
 
