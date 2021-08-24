@@ -29,6 +29,7 @@ type Props = {
 
 const CustomStatusSuggestion = ({handleSuggestionClick, emoji, text, theme, separator, handleClear, duration, expires_at, intl, isExpirySupported}: Props) => {
     const style = getStyleSheet(theme);
+    const customStatusDuration = CustomStatusDuration;
 
     const handleClick = useCallback(preventDoubleTap(() => {
         handleSuggestionClick({emoji, text, duration});
@@ -74,7 +75,9 @@ const CustomStatusSuggestion = ({handleSuggestionClick, emoji, text, theme, sepa
                                 textStyle={style.customStatusText}
                             />
                         </View>
-                        {Boolean(duration && isExpirySupported) && (
+                        {Boolean(duration &&
+                            duration !== customStatusDuration.DATE_AND_TIME &&
+                            isExpirySupported) && (
                             <View style={{paddingTop: 5}}>
                                 <CustomStatusText
                                     text={intl.formatMessage(durationValues[duration])}
