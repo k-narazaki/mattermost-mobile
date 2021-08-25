@@ -10,6 +10,7 @@ import {
     getSortedUnreadChannelIds,
     getOrderedChannelIds,
     getChannelsByCategoryForCurrentTeam,
+    getCategoriesForCurrentTeam,
 } from '@mm-redux/selectors/entities/channels';
 import {getConfig, getLicense, hasNewPermissions} from '@mm-redux/selectors/entities/general';
 import {getTheme, getFavoritesPreferences, getSidebarPreferences, isCollapsedThreadsEnabled} from '@mm-redux/selectors/entities/preferences';
@@ -52,6 +53,9 @@ function mapStateToProps(state) {
         true, // The mobile app should always display the Unreads section regardless of user settings (MM-13420)
         sidebarPrefs.favorite_at_top === 'true' && favoriteChannelIds.length,
     ));
+
+    // Grab our categories & channels
+    const categories = getCategoriesForCurrentTeam(state);
     const channelsByCategory = getChannelsByCategoryForCurrentTeam(state);
 
     let canJoinPublicChannels = true;
@@ -76,6 +80,7 @@ function mapStateToProps(state) {
         favoriteChannelIds,
         orderedChannelIds,
         channelsByCategory,
+        categories,
         showLegacySidebar,
     };
 }

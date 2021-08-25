@@ -51,7 +51,8 @@ export default class List extends PureComponent {
         unreadChannelIds: PropTypes.array.isRequired,
         favoriteChannelIds: PropTypes.array.isRequired,
         orderedChannelIds: PropTypes.array.isRequired,
-        channelsByCategory: PropTypes.array,
+        channelsByCategory: PropTypes.object,
+        categories: PropTypes.array,
         showLegacySidebar: PropTypes.bool.isRequired,
     };
 
@@ -66,7 +67,7 @@ export default class List extends PureComponent {
 
         this.state = {
             sections: this.buildSections(props),
-            categorySections: this.buildCategorySections(props.channelsByCategory),
+            categorySections: this.buildCategorySections(),
             showIndicator: false,
             width: 0,
         };
@@ -100,6 +101,7 @@ export default class List extends PureComponent {
             orderedChannelIds,
             unreadChannelIds,
             channelsByCategory,
+            categories,
             showLegacySidebar,
         } = prevProps;
 
@@ -107,9 +109,10 @@ export default class List extends PureComponent {
             this.props.unreadChannelIds !== unreadChannelIds ||
             this.props.orderedChannelIds !== orderedChannelIds ||
             this.props.channelsByCategory !== channelsByCategory ||
+            this.props.categories !== categories ||
             this.props.showLegacySidebar !== showLegacySidebar) {
             this.setSections(this.buildSections(this.props));
-            this.setCategorySections(this.buildCategorySections(this.props.channelsByCategory));
+            this.setCategorySections(this.buildCategorySections());
         }
 
         if (prevState.sections !== this.state.sections && this.listRef?._wrapperListRef?.getListRef()._viewabilityHelper) { //eslint-disable-line
@@ -389,9 +392,9 @@ export default class List extends PureComponent {
         return (
             <ChannelItem
                 testID={channelItemTestID}
-                channelId={item}
-                isUnread={unreadChannelIds.includes(item)}
-                isFavorite={favoriteChannelIds.includes(item)}
+                channelId={item.id}
+                isUnread={unreadChannelIds.includes(item.id)}
+                isFavorite={favoriteChannelIds.includes(item.id)}
                 onSelectChannel={this.onSelectChannel}
             />
         );
@@ -447,7 +450,7 @@ export default class List extends PureComponent {
         );
     }
 
-    buildCategorySections = (channelsByCategory) => {
+    buildCategorySections = () => {
         const data = [];
 
         // Start with Unreads
@@ -461,12 +464,12 @@ export default class List extends PureComponent {
         }
 
         // Add the rest
-        if (channelsByCategory) {
-            channelsByCategory.map((cat) => {
+        if (this.props.channelsByCategory && this.props.categories) {
+            this.props.categories.map((cat) => {
                 return data.push({
                     name: cat.display_name,
                     action: cat.type === 'direct_messages' ? this.goToDirectMessages : this.showCreateChannelOptions,
-                    data: cat.channel_ids,
+                    data: this.props.channelsByCategory[cat.id],
                     ...cat,
                 });
             });

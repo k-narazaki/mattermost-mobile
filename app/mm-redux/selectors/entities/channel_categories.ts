@@ -195,7 +195,7 @@ export function makeFilterAutoclosedDMs(): (state: GlobalState, channels: Channe
         (state: GlobalState) => getInt(state, Preferences.CATEGORY_SIDEBAR_SETTINGS, Preferences.LIMIT_VISIBLE_DMS_GMS, 20),
         getMyPreferences,
         isCollapsedThreadsEnabled,
-        (channels, categoryType, currentChannelId, profiles, currentUserId, myMembers, limitPref, myPreferences, collapsedThreadsEnabled) => {
+        (channels, categoryType, currentChannelId, profiles, currentUserId, myMembers, limitPref, myPreferences, collapsedThreads) => {
             if (categoryType !== CategoryTypes.DIRECT_MESSAGES) {
                 // Only autoclose DMs that haven't been assigned to a category
                 return channels;
@@ -205,6 +205,7 @@ export function makeFilterAutoclosedDMs(): (state: GlobalState, channels: Channe
                 const pref = myPreferences[getPreferenceKey(category, name)];
                 return parseInt(pref ? pref.value! : '0', 10);
             };
+
             const getLastViewedAt = (channel: Channel) => {
                 // The server only ever sets the last_viewed_at to the time of the last post in channel, so we may need
                 // to use the preferences added for the previous version of autoclosing DMs.
@@ -217,7 +218,7 @@ export function makeFilterAutoclosedDMs(): (state: GlobalState, channels: Channe
 
             let unreadCount = 0;
             let visibleChannels = channels.filter((channel) => {
-                if (isUnreadChannel(myMembers, channel, collapsedThreadsEnabled)) {
+                if (isUnreadChannel(myMembers, channel, collapsedThreads)) {
                     unreadCount++;
 
                     // Unread DMs/GMs are always visible
@@ -253,9 +254,9 @@ export function makeFilterAutoclosedDMs(): (state: GlobalState, channels: Channe
                 }
 
                 // Second priority is for unread channels
-                if (isUnreadChannel(myMembers, channelA, collapsedThreadsEnabled) && !isUnreadChannel(myMembers, channelB, collapsedThreadsEnabled)) {
+                if (isUnreadChannel(myMembers, channelA, collapsedThreads) && !isUnreadChannel(myMembers, channelB, collapsedThreads)) {
                     return -1;
-                } else if (!isUnreadChannel(myMembers, channelA, collapsedThreadsEnabled) && isUnreadChannel(myMembers, channelB, collapsedThreadsEnabled)) {
+                } else if (!isUnreadChannel(myMembers, channelA, collapsedThreads) && isUnreadChannel(myMembers, channelB, collapsedThreads)) {
                     return 1;
                 }
 
@@ -490,9 +491,7 @@ export function makeGetChannelIdsForCategory() {
 export function makeFilterAndSortChannelsForCategory() {
     const filterArchivedChannels = makeFilterArchivedChannels();
     const filterAutoclosedDMs = makeFilterAutoclosedDMs();
-
     const filterManuallyClosedDMs = makeFilterManuallyClosedDMs();
-
     const sortChannels = makeSortChannels();
 
     return (state: GlobalState, originalChannels: Channel[], category: ChannelCategory) => {
@@ -500,9 +499,7 @@ export function makeFilterAndSortChannelsForCategory() {
 
         channels = filterArchivedChannels(state, channels);
         channels = filterManuallyClosedDMs(state, channels);
-
         channels = filterAutoclosedDMs(state, channels, category.type);
-
         channels = sortChannels(state, channels, category);
 
         return channels;
@@ -517,8 +514,7 @@ export function makeGetChannelsByCategory() {
     let filterAndSortChannels: RelationOneToOne<ChannelCategory, ReturnType<typeof makeFilterAndSortChannelsForCategory>>;
 
     let lastCategoryIds: ReturnType<typeof getCategoryIdsForTeam> = [];
-
-    // let lastChannelsByCategory: RelationOneToOne<ChannelCategory, Channel[]> = {};
+    let lastChannelsByCategory: RelationOneToOne<ChannelCategory, Channel[]> = {};
 
     return (state: GlobalState, teamId: string) => {
         const categoryIds = getCategoryIdsForTeam(state, teamId);
@@ -528,8 +524,7 @@ export function makeGetChannelsByCategory() {
         // categories are reordered, but that should be rare enough that it won't meaningfully affect performance.
         if (categoryIds !== lastCategoryIds) {
             lastCategoryIds = categoryIds;
-
-            // lastChannelsByCategory = {};
+            lastChannelsByCategory = {};
 
             getChannels = {};
             filterAndSortChannels = {};
@@ -544,9 +539,6 @@ export function makeGetChannelsByCategory() {
 
         const categories = getCategoriesForTeam(state, teamId);
 
-        return categories;
-
-        /*
         const channelsByCategory: RelationOneToOne<ChannelCategory, Channel[]> = {};
 
         for (const category of categories) {
@@ -561,6 +553,5 @@ export function makeGetChannelsByCategory() {
 
         lastChannelsByCategory = channelsByCategory;
         return channelsByCategory;
-        */
     };
 }

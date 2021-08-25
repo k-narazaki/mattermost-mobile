@@ -1698,10 +1698,9 @@ describe('makeGetChannelsByCategory', () => {
             },
         });
         const result = getChannelsByCategory(state, 'team1');
-
-        expect(result[0]).toEqual(favoritesCategory);
-        expect(result[1]).toEqual(channelsCategory);
-        expect(result[2]).toEqual(directMessagesCategory);
+        expect(result.favoritesCategory).toEqual([dmChannel2, channel1]);
+        expect(result.channelsCategory).toEqual([channel2, channel3]);
+        expect(result.directMessagesCategory).toEqual([dmChannel1, gmChannel1]);
     });
 
     describe('memoization', () => {
@@ -1793,26 +1792,26 @@ describe('makeGetChannelsByCategory', () => {
             expect(result).toBe(previousResult);
         });
 
-        // test('should return a new object when a DM is closed', () => {
-        //     const getChannelsByCategory = Selectors.makeGetChannelsByCategory();
+        test('should return a new object when a DM is closed', () => {
+            const getChannelsByCategory = Selectors.makeGetChannelsByCategory();
 
-        //     const state = mergeObjects(baseState, {
-        //         entities: {
-        //             preferences: {
-        //                 myPreferences: {
-        //                     [getPreferenceKey(Preferences.CATEGORY_DIRECT_CHANNEL_SHOW, otherUser1.id)]: {value: 'false'},
-        //                 },
-        //             },
-        //         },
-        //     });
+            const state = mergeObjects(baseState, {
+                entities: {
+                    preferences: {
+                        myPreferences: {
+                            [getPreferenceKey(Preferences.CATEGORY_DIRECT_CHANNEL_SHOW, otherUser1.id)]: {value: 'false'},
+                        },
+                    },
+                },
+            });
 
-        //     const previousResult = getChannelsByCategory(baseState, 'team1');
-        //     const result = getChannelsByCategory(state, 'team1');
+            const previousResult = getChannelsByCategory(baseState, 'team1');
+            const result = getChannelsByCategory(state, 'team1');
 
-        //     expect(result).not.toBe(previousResult);
-        //     expect(result.favoritesCategory).toEqual(previousResult.favoritesCategory);
-        //     expect(result.channelsCategory).toEqual(previousResult.channelsCategory);
-        //     expect(result.directMessagesCategory).not.toEqual(previousResult.directMessagesCategory);
-        // });
+            expect(result).not.toBe(previousResult);
+            expect(result.favoritesCategory).toEqual(previousResult.favoritesCategory);
+            expect(result.channelsCategory).toEqual(previousResult.channelsCategory);
+            expect(result.directMessagesCategory).not.toEqual(previousResult.directMessagesCategory);
+        });
     });
 });
