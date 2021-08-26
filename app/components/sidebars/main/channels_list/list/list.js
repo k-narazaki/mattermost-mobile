@@ -437,7 +437,7 @@ export default class List extends PureComponent {
             </View>
         );
 
-        if (type === CategoryTypes.UNREADS) {
+        if (type === CategoryTypes.UNREADS || data.length === 0) {
             return header;
         }
 

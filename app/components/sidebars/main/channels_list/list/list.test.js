@@ -24,10 +24,23 @@ describe('ChannelsList List', () => {
         orderedChannelIds: [],
         isLandscape: false,
         onCollapseCategory: jest.fn(),
+        unreadChannels: [],
+        unreadsOnTop: true,
     };
 
     test('should match snapshot', () => {
         const wrapper = shallow(<List {...baseProps}/>);
+
+        expect(wrapper.getElement()).toMatchSnapshot();
+    });
+
+    test('should match snapshot with unreads not on top', () => {
+        const wrapper = shallow(
+            <List
+                {...baseProps}
+                unreadsOnTop={false}
+            />,
+        );
 
         expect(wrapper.getElement()).toMatchSnapshot();
     });
