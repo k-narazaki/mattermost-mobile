@@ -3,7 +3,7 @@
 import {connect} from 'react-redux';
 
 import {DeviceTypes, ViewTypes} from '@constants';
-import {General} from '@mm-redux/constants';
+import {General, Preferences} from '@mm-redux/constants';
 import Permissions from '@mm-redux/constants/permissions';
 import {
     getSortedFavoriteChannelIds,
@@ -11,9 +11,10 @@ import {
     getOrderedChannelIds,
     getChannelsByCategoryForCurrentTeam,
     getCategoriesForCurrentTeam,
+    getUnreadChannels,
 } from '@mm-redux/selectors/entities/channels';
 import {getConfig, getLicense, hasNewPermissions} from '@mm-redux/selectors/entities/general';
-import {getTheme, getFavoritesPreferences, getSidebarPreferences, isCollapsedThreadsEnabled} from '@mm-redux/selectors/entities/preferences';
+import {getTheme, getFavoritesPreferences, getSidebarPreferences, isCollapsedThreadsEnabled, getBool} from '@mm-redux/selectors/entities/preferences';
 import {haveITeamPermission} from '@mm-redux/selectors/entities/roles';
 import {getCurrentTeamId} from '@mm-redux/selectors/entities/teams';
 import {getCurrentUserId, getCurrentUserRoles} from '@mm-redux/selectors/entities/users';
@@ -43,7 +44,11 @@ function mapStateToProps(state) {
     const isSystemAdmin = checkIsSystemAdmin(roles);
     const sidebarPrefs = getSidebarPreferences(state);
     const lastUnreadChannel = DeviceTypes.IS_TABLET ? state.views.channel.keepChannelIdAsUnread : null;
+    const unreadsOnTop = getBool(state,
+        Preferences.CATEGORY_SIDEBAR_SETTINGS,
+        'show_unread_section');
     const unreadChannelIds = getSortedUnreadChannelIds(state, lastUnreadChannel);
+    const unreadChannels = getUnreadChannels(state, lastUnreadChannel);
     const favoriteChannelIds = getSortedFavoriteChannelIds(state);
     const orderedChannelIds = filterZeroUnreads(getOrderedChannelIds(
         state,
@@ -82,6 +87,8 @@ function mapStateToProps(state) {
         channelsByCategory,
         categories,
         showLegacySidebar,
+        unreadChannels,
+        unreadsOnTop,
     };
 }
 

@@ -72,7 +72,6 @@ export default class OptionsModalList extends PureComponent {
                         onPress={() => this.handleItemPress(item.action)}
                         style={style.option}
                     >
-                        {textComponent}
                         {item.icon &&
                         <CompassIcon
                             name={item.icon}
@@ -80,6 +79,8 @@ export default class OptionsModalList extends PureComponent {
                             style={optionIconStyle}
                         />
                         }
+                        {textComponent}
+
                     </TouchableOpacity>
                 </View>
             );
@@ -156,6 +157,7 @@ const style = StyleSheet.create({
     },
     optionIcon: {
         color: 'rgba(61, 60, 64, 0.64)',
+        paddingRight: 10,
     },
     optionText: {
         color: '#3D3C40',

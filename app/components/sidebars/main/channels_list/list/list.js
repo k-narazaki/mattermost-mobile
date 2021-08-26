@@ -54,6 +54,8 @@ export default class List extends PureComponent {
         channelsByCategory: PropTypes.object,
         categories: PropTypes.array,
         showLegacySidebar: PropTypes.bool.isRequired,
+        unreadChannels: PropTypes.array,
+        unreadsOnTop: PropTypes.bool.isRequired,
     };
 
     static contextTypes = {
@@ -203,31 +205,25 @@ export default class List extends PureComponent {
             canCreatePublicChannels,
         } = this.props;
 
-        const moreChannelsText = formatMessage({id: 'more_channels.title', defaultMessage: 'More Channels'});
-        const newPublicChannelText = formatMessage({id: 'mobile.create_channel.public', defaultMessage: 'New Public Channel'});
-        const newPrivateChannelText = formatMessage({id: 'mobile.create_channel.private', defaultMessage: 'New Private Channel'});
-        const newDirectChannelText = formatMessage({id: 'mobile.more_dms.title', defaultMessage: 'New Conversation'});
+        const moreChannelsText = formatMessage({id: 'more_channels.title', defaultMessage: 'Browse for a Channel'});
+        const newChannelText = formatMessage({id: 'mobile.create_channel', defaultMessage: 'Create a new Channel'});
+        const newDirectChannelText = formatMessage({id: 'mobile.more_dms.title', defaultMessage: 'Add a Conversation'});
         const cancelText = formatMessage({id: 'mobile.post.cancel', defaultMessage: 'Cancel'});
         const options = [];
         const actions = [];
 
         if (canJoinPublicChannels) {
             actions.push(this.goToMoreChannels);
-            options.push(moreChannelsText);
+            options.push({text: moreChannelsText, icon: 'globe'});
         }
 
-        if (canCreatePublicChannels) {
+        if (canCreatePrivateChannels || canCreatePublicChannels) {
             actions.push(this.goToCreatePublicChannel);
-            options.push(newPublicChannelText);
-        }
-
-        if (canCreatePrivateChannels) {
-            actions.push(this.goToCreatePrivateChannel);
-            options.push(newPrivateChannelText);
+            options.push({text: newChannelText, icon: 'plus'});
         }
 
         actions.push(this.goToDirectMessages);
-        options.push(newDirectChannelText);
+        options.push({text: newDirectChannelText, icon: 'account-plus-outline'});
         options.push(cancelText);
 
         const cancelButtonIndex = options.length - 1;
@@ -275,6 +271,7 @@ export default class List extends PureComponent {
         const screen = 'CreateChannel';
         const title = intl.formatMessage({id: 'mobile.create_channel', defaultMessage: 'Create a new Channel'});
         const passProps = {
+            channelType: General.OPEN_CHANNEL,
             closeButton: this.closeButton,
         };
 
@@ -402,7 +399,7 @@ export default class List extends PureComponent {
 
     renderCategoryHeader = ({section}) => {
         const {styles, onCollapseCategory} = this.props;
-        const {action, id, name, collapsed, type} = section;
+        const {action, id, name, collapsed, type, data} = section;
         const {intl} = this.context;
         const anchor = (id === 'sidebar.types.recent' || id === 'mobile.channel_list.channels');
 
@@ -423,12 +420,13 @@ export default class List extends PureComponent {
 
         const header = (
             <View style={styles.titleContainer}>
-                {type !== 'unreads' &&
+                {(type !== CategoryTypes.UNREADS && data.length > 0) &&
                     <CompassIcon
                         name={collapsed ? 'chevron-right' : 'chevron-down'}
                         ref={anchor ? this.combinedActionsRef : null}
                         style={styles.chevron}
-                    />}
+                    />
+                }
                 <Text style={styles.title}>
                     {title()}
                 </Text>
@@ -451,14 +449,14 @@ export default class List extends PureComponent {
     }
 
     buildCategorySections = () => {
-        const data = [];
+        const categoriesBySection = [];
 
         // Start with Unreads
-        if (this.props.unreadChannelIds.length) {
-            data.push({
+        if (this.props.unreadChannels.length && this.props.unreadsOnTop) {
+            categoriesBySection.push({
                 id: 'unreads',
                 name: 'UNREADS',
-                data: this.props.unreadChannelIds,
+                data: this.props.unreadChannels,
                 type: CategoryTypes.UNREADS,
             });
         }
@@ -466,7 +464,7 @@ export default class List extends PureComponent {
         // Add the rest
         if (this.props.channelsByCategory && this.props.categories) {
             this.props.categories.map((cat) => {
-                return data.push({
+                return categoriesBySection.push({
                     name: cat.display_name,
                     action: cat.type === 'direct_messages' ? this.goToDirectMessages : this.showCreateChannelOptions,
                     data: this.props.channelsByCategory[cat.id],
@@ -475,7 +473,7 @@ export default class List extends PureComponent {
             });
         }
 
-        return data;
+        return categoriesBySection;
     }
 
     scrollToTop = () => {

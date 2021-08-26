@@ -419,7 +419,6 @@ function handleEvent(msg: WebSocketMessage) {
         case WebsocketEvents.SIDEBAR_CATEGORY_UPDATED:
             dispatch(handleSidebarCategoryUpdated(msg));
             break;
-
         case WebsocketEvents.SIDEBAR_CATEGORY_DELETED:
             dispatch(handleSidebarCategoryDeleted(msg));
             break;

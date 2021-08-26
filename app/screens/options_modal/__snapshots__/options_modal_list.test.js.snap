@@ -78,6 +78,16 @@ exports[`OptionModalList should match snapshot 1`] = `
             }
           }
         >
+          <CompassIcon
+            name="camera"
+            size={24}
+            style={
+              Object {
+                "color": "rgba(61, 60, 64, 0.64)",
+                "paddingRight": 10,
+              }
+            }
+          />
           <InjectIntl(FormattedText)
             defaultMessage="Take Photo or Video"
             id="mobile.file_upload.camera"
@@ -93,15 +103,6 @@ exports[`OptionModalList should match snapshot 1`] = `
                 undefined,
                 false,
               ]
-            }
-          />
-          <CompassIcon
-            name="camera"
-            size={24}
-            style={
-              Object {
-                "color": "rgba(61, 60, 64, 0.64)",
-              }
             }
           />
         </ForwardRef>
@@ -121,6 +122,16 @@ exports[`OptionModalList should match snapshot 1`] = `
             }
           }
         >
+          <CompassIcon
+            name="photo"
+            size={24}
+            style={
+              Object {
+                "color": "rgba(61, 60, 64, 0.64)",
+                "paddingRight": 10,
+              }
+            }
+          />
           <InjectIntl(FormattedText)
             defaultMessage="Photo Library"
             id="mobile.file_upload.library"
@@ -136,15 +147,6 @@ exports[`OptionModalList should match snapshot 1`] = `
                 undefined,
                 false,
               ]
-            }
-          />
-          <CompassIcon
-            name="photo"
-            size={24}
-            style={
-              Object {
-                "color": "rgba(61, 60, 64, 0.64)",
-              }
             }
           />
         </ForwardRef>

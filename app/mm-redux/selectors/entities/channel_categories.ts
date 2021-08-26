@@ -8,7 +8,7 @@ import shallow_equals from 'shallow-equals';
 import {makeGetChannelsForIds, getCurrentChannelId, getMyChannelMemberships} from '@mm-redux/selectors/entities/channels';
 import {getCurrentUserLocale} from '@mm-redux/selectors/entities/i18n';
 import {getLastPostPerChannel} from '@mm-redux/selectors/entities/posts';
-import {getInt, getMyPreferences, getTeammateNameDisplaySetting, isCollapsedThreadsEnabled, shouldAutocloseDMs} from '@mm-redux/selectors/entities/preferences';
+import {getInt, getMyPreferences, getSidebarPreferences, getTeammateNameDisplaySetting, isCollapsedThreadsEnabled, shouldAutocloseDMs} from '@mm-redux/selectors/entities/preferences';
 import {getCurrentUserId} from '@mm-redux/selectors/entities/users';
 import {CategorySorting, ChannelCategory, ChannelCategoryType} from '@mm-redux/types/channel_categories';
 import {Channel, ChannelMembership} from '@mm-redux/types/channels';
@@ -86,6 +86,19 @@ export function makeFilterArchivedChannels(): (state: GlobalState, channels: Cha
         (channels: Channel[], currentChannelId: string) => {
             const filtered = channels.filter((channel) => channel && (channel.id === currentChannelId || channel.delete_at === 0));
 
+            return filtered.length === channels.length ? channels : filtered;
+        },
+    );
+}
+
+// Filters out all the unread channels
+export function makeFilterUnreadChannels(): (state: GlobalState, channels: Channel[]) => Channel[] {
+    return createSelector(
+        (state: GlobalState, channels: Channel[]) => channels,
+        isCollapsedThreadsEnabled,
+        getMyChannelMemberships,
+        (channels: Channel[], collapsedThreadsEnabled: boolean, myChannelMembers) => {
+            const filtered = channels.filter((channel) => channel && !isUnreadChannel(myChannelMembers, channel, collapsedThreadsEnabled));
             return filtered.length === channels.length ? channels : filtered;
         },
     );
@@ -492,6 +505,7 @@ export function makeFilterAndSortChannelsForCategory() {
     const filterArchivedChannels = makeFilterArchivedChannels();
     const filterAutoclosedDMs = makeFilterAutoclosedDMs();
     const filterManuallyClosedDMs = makeFilterManuallyClosedDMs();
+    const filterUnreadChannels = makeFilterUnreadChannels();
     const sortChannels = makeSortChannels();
 
     return (state: GlobalState, originalChannels: Channel[], category: ChannelCategory) => {
@@ -501,6 +515,11 @@ export function makeFilterAndSortChannelsForCategory() {
         channels = filterManuallyClosedDMs(state, channels);
         channels = filterAutoclosedDMs(state, channels, category.type);
         channels = sortChannels(state, channels, category);
+
+        const sidebarPreferences = getSidebarPreferences(state);
+        if (sidebarPreferences.unreads_at_top === 'true') {
+            channels = filterUnreadChannels(state, channels);
+        }
 
         return channels;
     };

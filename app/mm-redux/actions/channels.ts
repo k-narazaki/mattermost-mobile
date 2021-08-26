@@ -91,6 +91,30 @@ export function createChannel(channel: Channel, userId: string): ActionFunc {
     };
 }
 
+export function createChannelInCategory(channel: Channel, userId: string, categoryId: string): ActionFunc {
+    return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
+        let createdChannel;
+        let moveChannel;
+
+        try {
+            createdChannel = await dispatch(createChannel(channel, userId));
+            moveChannel = dispatch(addChannelToCategory(categoryId, createdChannel.data!.id));
+        } catch (error) {
+            forceLogoutIfNecessary(error, dispatch, getState);
+            dispatch(batchActions([
+                {
+                    type: ChannelTypes.CREATE_CHANNEL_FAILURE,
+                    error,
+                },
+                logError(error),
+            ]));
+            return {error};
+        }
+
+        return {data: {createdChannel, moveChannel}};
+    };
+}
+
 export function createDirectChannel(userId: string, otherUserId: string): ActionFunc {
     return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
         dispatch({type: ChannelTypes.CREATE_CHANNEL_REQUEST, data: null});
