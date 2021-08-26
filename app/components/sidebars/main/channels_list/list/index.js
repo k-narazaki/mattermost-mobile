@@ -12,6 +12,7 @@ import {
     getChannelsByCategoryForCurrentTeam,
     getCategoriesForCurrentTeam,
     getUnreadChannels,
+    getCurrentChannelId,
 } from '@mm-redux/selectors/entities/channels';
 import {getConfig, getLicense, hasNewPermissions} from '@mm-redux/selectors/entities/general';
 import {getTheme, getFavoritesPreferences, getSidebarPreferences, isCollapsedThreadsEnabled, getBool} from '@mm-redux/selectors/entities/preferences';
@@ -62,6 +63,7 @@ function mapStateToProps(state) {
     // Grab our categories & channels
     const categories = getCategoriesForCurrentTeam(state);
     const channelsByCategory = getChannelsByCategoryForCurrentTeam(state);
+    const currentChannelId = getCurrentChannelId(state);
 
     let canJoinPublicChannels = true;
     if (hasNewPermissions(state)) {
@@ -89,6 +91,7 @@ function mapStateToProps(state) {
         showLegacySidebar,
         unreadChannels,
         unreadsOnTop,
+        currentChannelId,
     };
 }
 

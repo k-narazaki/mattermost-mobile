@@ -56,6 +56,7 @@ export default class List extends PureComponent {
         showLegacySidebar: PropTypes.bool.isRequired,
         unreadChannels: PropTypes.array,
         unreadsOnTop: PropTypes.bool.isRequired,
+        currentChannelId: PropTypes.string,
     };
 
     static contextTypes = {
@@ -379,7 +380,7 @@ export default class List extends PureComponent {
     };
 
     renderCategoryItem = ({item, section}) => {
-        if (section.collapsed) {
+        if (section.collapsed && this.props.currentChannelId !== item.id) {
             return null;
         }
 
