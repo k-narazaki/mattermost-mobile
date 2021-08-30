@@ -1,11 +1,11 @@
 ############ VARIABLE VALUES ############
 #export MATTERMOST_WEBHOOK_URL=<set this to an incoming webhook url to get a notification when the build finishes>
 
-export BRANCH_TO_BUILD=master
+export BRANCH_TO_BUILD=v1.46.0-ms-custom
 export GIT_LOCAL_BRANCH=build
 
-export APP_NAME="Mattermost Beta"
-export APP_SCHEME=mattermost
+export APP_NAME="CareerMost Beta"
+export APP_SCHEME=CareerMost
 
 #export INCREMENT_BUILD_NUMBER=false
 ## This sets the version number ex: 1.22.0 if not set it uses the one in the code base
@@ -22,25 +22,25 @@ export LC_ALL="en_US.UTF-8"
 export NODE_OPTIONS=--max_old_space_size=12000
 
 ############ MATCH IS USED TO SYNC THE IOS PROVISIONING PROFILES ############
-export MATCH_USERNAME=<itunes connect account>
-export FASTLANE_PASSWORD=<itunes connect password>
-export MATCH_PASSWORD=<itunes connect password>
-export MATCH_KEYCHAIN_PASSWORD=<the password of the user running the build in the build machine>
-export MATCH_GIT_URL=<private git repository to allow match sync the provisioning profiles>
-export MATCH_APP_IDENTIFIER=com.mattermost.rnbeta.NotificationService,com.mattermost.rnbeta.MattermostShare,com.mattermost.rnbeta
+export MATCH_USERNAME=apple@vicent.co.jp
+export FASTLANE_PASSWORD=Y6nHkTkM#98
+export MATCH_PASSWORD=Y6nHkTkM#98
+export MATCH_KEYCHAIN_PASSWORD=Jftcv345SA
+export MATCH_GIT_URL=https://github.com/k-narazaki/mattermost-mobile.git
+export MATCH_APP_IDENTIFIER=bz.vicent.careermost.NotificationService,bz.vicent.careermost.MattermostShare,bz.vicent.careermost
 export MATCH_TYPE=appstore
 export MATCH_SHALLOW_CLONE=true
 export MATCH_SKIP_DOCS=true
-export FASTLANE_TEAM_ID=<itunes connect team ID>
+export FASTLANE_TEAM_ID=TEJ9YTWJ5A
 export SYNC_PROVISIONING_PROFILES=true
 
 ############ NEEDED TO UPLOAD THE BUILD TO TESTFLIGHT ############
-export PILOT_USERNAME=<itunes connect account>
+export PILOT_USERNAME=apple@vicent.co.jp
 export PILOT_SKIP_WAITING_FOR_BUILD_PROCESSING=true
 
 ############ NEEDED TO UPLOAD THE BUILD TO GOOGLE PLAY ############
 export SUPPLY_TRACK=alpha
-export SUPPLY_PACKAGE_NAME=com.mattermost.rnbeta
+export SUPPLY_PACKAGE_NAME=bz.vicent.careermost
 export SUPPLY_JSON_KEY=<The path to the service account json file used to authenticate with Google>
 export SUPPLY_VALIDATE_ONLY=false
 
@@ -50,11 +50,11 @@ export BUILD_FOR_RELEASE=true
 export REPLACE_ASSETS=false
 
 ############ APP IDENTIFIERS ############
-export MAIN_APP_IDENTIFIER=com.mattermost.rnbeta
-export EXTENSION_APP_IDENTIFIER=com.mattermost.rnbeta.MattermostShare
-export NOTIFICATION_SERVICE_IDENTIFIER=com.mattermost.rnbeta.NotificationService
-export IOS_APP_GROUP=group.com.mattermost.rnbeta
-export IOS_ICLOUD_CONTAINER=iCloud.com.mattermost.rnbeta
+export MAIN_APP_IDENTIFIER=bz.vicent.careermost
+export EXTENSION_APP_IDENTIFIER=bz.vicent.careermost.MattermostShare
+export NOTIFICATION_SERVICE_IDENTIFIER=bz.vicent.careermost.NotificationService
+export IOS_APP_GROUP=group.bz.vicent.careermost
+export IOS_ICLOUD_CONTAINER=iCloud.bz.vicent.careermost
 export IOS_BUILD_EXPORT_METHOD=app-store
 
 ############ SET TO TRUE TO UPLOAD THE BUILDS TO TESTFLIGH AND GOOGLE PLAY ############
