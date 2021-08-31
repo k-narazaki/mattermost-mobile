@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>AppGroupIdentifier</key>
-	<string>group.com.mattermost.rnbeta</string>
+	<string>group.bz.vicent.careermost</string>
 	<key>BundleEntryFilename</key>
 	<string>index.js</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>CarreMost Beta</string>
+	<string>CareerMost Beta</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -31,8 +31,8 @@
 			<string>com.mattermost</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>mattermost</string>
-				<string>mmauth</string>
+				<string>CareerMost</string>
+				<string>mmauthbeta</string>
 			</array>
 		</dict>
 	</array>
